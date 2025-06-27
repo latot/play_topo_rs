@@ -73,10 +73,7 @@ impl LwtBeTopologyT<'_> {
                 name: &'a str,
         ) -> Result<LwtBeTopologyT<'a>, Error> {
                 Spi::connect(|client: &spi::SpiClient<'_>| {
-                        let params = &[unsafe {
-                                DatumWithOid::new(name.into_datum(), PgBuiltInOids::TEXTOID.into())
-                        }];
-                        let ret = match client.select(TOPOBYNAMEQUERY, None, params) {
+                        let ret = match client.select(TOPOBYNAMEQUERY, None, &[name.into()]) {
                                 Ok(x) => x,
                                 Err(x) => return Err(x.into()),
                         };
