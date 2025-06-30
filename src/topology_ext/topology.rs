@@ -1,5 +1,5 @@
-use super::sample2::Error as GError;
-use pgrx::spi::{Error, SpiTupleTable};
+use super::error::Error;
+use pgrx::spi::SpiTupleTable;
 use struct_iterable::Iterable;
 
 /// Represent each row of topology.topology
@@ -15,15 +15,15 @@ pub struct Topology {
 fn read_field<T: pgrx::IntoDatum + pgrx::FromDatum>(
         value: &SpiTupleTable,
         name: &str,
-) -> Result<T, GError> {
+) -> Result<T, Error> {
         value.get_by_name::<T, &str>(name)
-                .map_err(GError::SpiError)?
-                .ok_or(GError::MissingField(String::from(name)))
+                .map_err(Error::SpiError)?
+                .ok_or(Error::MissingField(String::from(name)))
 }
 
 impl TryFrom<SpiTupleTable<'_>> for Topology {
-        type Error = GError;
-        fn try_from(value: SpiTupleTable) -> Result<Self, GError> {
+        type Error = Error;
+        fn try_from(value: SpiTupleTable) -> Result<Self, Error> {
                 let id = read_field(&value, "id")?;
                 let name = read_field(&value, "name")?;
                 let srid = read_field(&value, "srid")?;

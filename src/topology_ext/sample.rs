@@ -68,7 +68,7 @@ impl std::error::Error for Error {}
 struct Foo {}
 
 impl LwtBeTopologyT<'_> {
-        fn try_load_by_name<'a>(
+        fn try_load_from_name<'a>(
                 be_data: &'a LwtBeDataT<'a>,
                 name: &'a str,
         ) -> Result<LwtBeTopologyT<'a>, Error> {

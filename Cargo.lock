@@ -888,6 +888,7 @@ dependencies = [
 name = "my_extension"
 version = "0.0.0"
 dependencies = [
+ "once_cell",
  "pgrx 0.14.3 (git+https://github.com/pgcentralfoundation/pgrx)",
  "pgrx-tests",
  "struct_iterable",

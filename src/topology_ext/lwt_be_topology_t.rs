@@ -1,26 +1,7 @@
-use std::f32::MAX;
-use std::fmt::Display;
-
-use pgrx::datum::DatumWithOid;
+use super::error::Error;
+use super::lwt_be_data_t::LwtBeDataT;
+use super::topology::Topology;
 use pgrx::prelude::*;
-use pgrx::spi::{SpiError, SpiTupleTable};
-use pgrx::*;
-
-const MAXERRLEN: usize = 256;
-
-enum TopoLoadFailMessageFlavor {
-        SQL,
-        AddPoint,
-}
-
-struct LwtBeDataT<'a> {
-        r#char: &'a str,
-        data_changed: bool,
-        topo_load_fail_message_flavor: TopoLoadFailMessageFlavor,
-}
-
-enum TODO {}
-
 struct LwtBeTopologyT<'a> {
         be_data: &'a LwtBeDataT<'a>,
         name: &'a str,
@@ -36,41 +17,8 @@ const TOPOBYNAMEQUERY: &str = "
         FROM topology.topology WHERE name = $1::varchar
 ";
 
-#[derive(Debug, PartialEq)]
-pub enum Error {
-        SpiError(SpiError),
-        NotOneRow,
-        NoRows,
-        MissingField(String),
-}
-
-impl From<SpiError> for Error {
-        fn from(value: SpiError) -> Self {
-                Error::SpiError(value)
-        }
-}
-
-impl std::fmt::Display for Error {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                write!(
-                        f,
-                        "{}",
-                        match self {
-                                Error::NoRows => String::from("No rows found"),
-                                Error::NotOneRow => String::from("More than one row found"),
-                                Error::SpiError(x) => format!("{:?}", x),
-                                Error::MissingField(x) => format!("Missing field: {}", x),
-                        }
-                )
-        }
-}
-
-impl std::error::Error for Error {}
-
-use super::topology::Topology;
-
 impl LwtBeTopologyT<'_> {
-        fn try_load_by_name<'a>(
+        fn try_load_from_name<'a>(
                 be_data: &'a LwtBeDataT<'a>,
                 name: &'a str,
         ) -> Result<LwtBeTopologyT<'a>, Error> {
